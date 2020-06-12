@@ -1,0 +1,19 @@
+{
+  "private": "true",
+  "name": "root0",
+  "version": "0.0.0",
+  "description": "Naïve userland JS implementation of HTML specifier restriction and web browser “window” as “globalThis”",
+  "exports": "./index.mjs",
+  "scripts": {
+    "test": "node --experimental-loader ./index.mjs ./globalThis.spec.mjs && node --experimental-loader ./index.mjs ./bareSpecifier.spec.mjs"
+  },
+  "keywords": [],
+  "author": "Derek Lewis <DerekNonGeneric@inf.is>",
+  "license": "0BSD",
+  "engines": {
+    "node": "14.4.0"
+  },
+  "dependencies": {
+    "jsdom": "16.2.2"
+  }
+}
