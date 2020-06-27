@@ -179,6 +179,9 @@ const require = createRequire(process.cwd() + '/<preload>');
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 const dom = new JSDOM('<!DOCTYPE html><p>Hello, world!</p>');
-globalThis = dom.window;
+
+// This _might_ be an antipattern.
+// @see https://github.com/jsdom/jsdom/wiki/Don't-stuff-jsdom-globals-onto-the-Node-global
+Object.defineProperties(globalThis, Object.getOwnPropertyDescriptors(dom.window));
 `;
 }
