@@ -15,7 +15,7 @@ import { format } from 'util';
 import { writeSync } from 'fs';
 
 const baseURL = new URL('file://');
-baseURL.pathname = process.cwd() + '/';
+baseURL.pathname = `${process.cwd()}/`;
 
 /** @enum {string} */
 const ansiEscapes = {
@@ -69,7 +69,7 @@ export function curlyQuote(arbitraryString) {
 
 /**
  * Returns the supplied string as an italicized string.
- * TODO: Only italicize if the terminal supports ANSI.
+ * TODO: Only italicize if the terminal supports ANSI escapes.
  * @param {string} arbitraryString
  * @returns {string}
  */
@@ -84,7 +84,7 @@ export function italicize(arbitraryString) {
 
 /**
  * Returns the supplied string as an underlined string.
- * TODO: Only underline if the terminal supports ANSI.
+ * TODO: Only underline if the terminal supports ANSI escapes.
  * @param {string} arbitraryString
  * @returns {string}
  */
@@ -127,12 +127,13 @@ export function isReservedSpecifier(specifier) {
 export class InvalidModuleSpecifierError extends TypeError {
   /**
    * @param {string} specifier The invalid module specifier.
-   * @param {string} baseFilePath The parent module's file path basename.
+   * @param {string} referrerUrl The absolute file URL string of the module
+   *     making the request.
    */
-  constructor(specifier, baseFilePath) {
+  constructor(specifier, referrerUrl) {
     super(
       `Failed to resolve module specifier ${curlyQuote(specifier)} imported ` +
-        `from ${underline(baseFilePath)}. Bare specifiers are reserved for ` +
+        `from ${underline(referrerUrl)}. Bare specifiers are reserved for ` +
         `potential future use and relative references ${italicize('must')} ` +
         `begin with ${curlyQuote('/')}, ${curlyQuote('./')}, or ` +
         `${curlyQuote('../')}.`
@@ -152,9 +153,9 @@ export class InvalidModuleSpecifierError extends TypeError {
  * @param {string} specifier
  * @param {{
  *   parentURL: !(string | undefined),
- *   conditions: !(Array<string>),
+ *   conditions: !Array<string>,
  * }} context
- * @param {Function} defaultResolve
+ * @param {!Function} defaultResolve
  * @returns {Promise<{ url: string }>} The response.
  */
 export async function resolve(specifier, context, defaultResolve) {
@@ -169,19 +170,24 @@ export async function resolve(specifier, context, defaultResolve) {
  * Node.js custom loader getGlobalPreloadCode hook — allows returning JS source
  * text that will be run as a sloppy-mode script on startup.
  *
+ * Doing what we've done at the end _might_ be an antipattern. (?)
+ *
  * @returns {string} Code to run before application startup.
+ * @see https://github.com/jsdom/jsdom/wiki/Don't-stuff-jsdom-globals-onto-the-Node-global
  */
 export function getGlobalPreloadCode() {
+  // All the ECMAScript code loaded within the scope of the global environment.
   return `\
 const { createRequire } = getBuiltin('module');
 const require = createRequire(process.cwd() + '/<preload>');
 
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
-const dom = new JSDOM('<!DOCTYPE html><p>Hello, world!</p>');
+const dom = new JSDOM('<!DOCTYPE HTML><p>Hello, world!</p>');
 
-// This _might_ be an antipattern.
-// @see https://github.com/jsdom/jsdom/wiki/Don't-stuff-jsdom-globals-onto-the-Node-global
-Object.defineProperties(globalThis, Object.getOwnPropertyDescriptors(dom.window));
+Object.defineProperties(
+  globalThis,
+  Object.getOwnPropertyDescriptors(dom.window)
+);
 `;
 }
