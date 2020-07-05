@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "cli-color": "2.0.0",
-    "jsdom": "16.2.2"
+    "jsdom": "16.2.2",
+    "supports-ansi": "1.0.6"
   }
 }

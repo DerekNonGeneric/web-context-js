@@ -14,8 +14,8 @@
 import { format } from 'util';
 import { writeSync } from 'fs';
 import clc from 'cli-color';
+import supportsAnsi from 'supports-ansi';
 
-const { italic: italicize, red: redden, underline } = clc;
 const baseURL = new URL('file://');
 baseURL.pathname = `${process.cwd()}/`;
 
@@ -34,14 +34,10 @@ const unicodeEscapes = {
 // TODO: Only use `unicodeEscapes.errorSymbol` if the terminal supports Unicode
 //       and the font used by the terminal has a glyph for it.
 process.on('uncaughtException', (err /* , origin */) => {
-  writeSync(
-    process.stderr.fd,
-    redden(
-      `${unicodeEscapes.errorSymbol} Uncaught ${
-        err instanceof TypeError ? 'TypeError' : 'Error'
-      }: ${err.message}`
-    )
-  );
+  const errorText = `${unicodeEscapes.errorSymbol} Uncaught ${
+    err instanceof TypeError ? 'TypeError' : 'Error'
+  }: ${err.message}`;
+  writeSync(process.stderr.fd, redden(errorText));
 });
 
 // -----------------------------------------------------------------------------
@@ -61,6 +57,33 @@ export function curlyQuote(arbitraryString) {
     arbitraryString,
     unicodeEscapes.rightDoubleQuotes
   );
+}
+
+/**
+ * Returns the supplied string as italicized if stream supports ANSI escapes.
+ * @param {string} arbitraryString
+ * @returns {string}
+ */
+export function italicize(arbitraryString) {
+  return supportsAnsi ? clc.italic(arbitraryString) : arbitraryString;
+}
+
+/**
+ * Returns the supplied string as a red colored if stream supports ANSI escapes.
+ * @param {string} arbitraryString
+ * @returns {string}
+ */
+export function redden(arbitraryString) {
+  return supportsAnsi ? clc.red(arbitraryString) : arbitraryString;
+}
+
+/**
+ * Returns the supplied string as underlined if stream supports ANSI escapes.
+ * @param {string} arbitraryString
+ * @returns {string}
+ */
+export function underline(arbitraryString) {
+  return supportsAnsi ? clc.underline(arbitraryString) : arbitraryString;
 }
 
 /**
