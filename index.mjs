@@ -116,7 +116,7 @@ export function underline(arbitraryString) {
  * @see https://html.spec.whatwg.org/multipage/webappapis.html#resolve-a-module-specifier
  */
 export function isReservedSpecifier(specifier) {
-  if (!(specifier.startsWith('file://') || /^\.{0,2}\//.test(specifier))) {
+  if (!specifier.startsWith('file://') && !/^\.{0,2}\//.test(specifier)) {
     return true;
   }
   return false;
