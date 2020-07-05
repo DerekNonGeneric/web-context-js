@@ -13,17 +13,11 @@
 
 import { format } from 'util';
 import { writeSync } from 'fs';
+import clc from 'cli-color';
 
+const { italic: italicize, red: redden, underline } = clc;
 const baseURL = new URL('file://');
 baseURL.pathname = `${process.cwd()}/`;
-
-/** @enum {string} */
-const ansiEscapes = {
-  startItalics: '\u001b[3m',
-  stopItalics: '\u001b[0m',
-  startUnderline: '\u001b[4m',
-  stopUnderline: '\u001b[0m',
-};
 
 /** @enum {string} */
 const unicodeEscapes = {
@@ -42,9 +36,11 @@ const unicodeEscapes = {
 process.on('uncaughtException', (err /* , origin */) => {
   writeSync(
     process.stderr.fd,
-    `${unicodeEscapes.errorSymbol} Uncaught ${
-      err instanceof TypeError ? 'TypeError' : 'Error'
-    }: ${err.message}`
+    redden(
+      `${unicodeEscapes.errorSymbol} Uncaught ${
+        err instanceof TypeError ? 'TypeError' : 'Error'
+      }: ${err.message}`
+    )
   );
 });
 
@@ -64,36 +60,6 @@ export function curlyQuote(arbitraryString) {
     unicodeEscapes.leftDoubleQuotes,
     arbitraryString,
     unicodeEscapes.rightDoubleQuotes
-  );
-}
-
-/**
- * Returns the supplied string as an italicized string.
- * TODO: Only italicize if the terminal supports ANSI escapes.
- * @param {string} arbitraryString
- * @returns {string}
- */
-export function italicize(arbitraryString) {
-  return format(
-    '%s%s%s',
-    ansiEscapes.startItalics,
-    arbitraryString,
-    ansiEscapes.stopItalics
-  );
-}
-
-/**
- * Returns the supplied string as an underlined string.
- * TODO: Only underline if the terminal supports ANSI escapes.
- * @param {string} arbitraryString
- * @returns {string}
- */
-export function underline(arbitraryString) {
-  return format(
-    '%s%s%s',
-    ansiEscapes.startUnderline,
-    arbitraryString,
-    ansiEscapes.stopUnderline
   );
 }
 
