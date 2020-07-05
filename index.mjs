@@ -14,6 +14,7 @@
 import { format } from 'util';
 import { writeSync } from 'fs';
 import clc from 'cli-color';
+import columnify from 'columnify';
 import supportsAnsi from 'supports-ansi';
 
 const baseURL = new URL('file://');
@@ -34,10 +35,28 @@ const unicodeEscapes = {
 // TODO: Only use `unicodeEscapes.errorSymbol` if the terminal supports Unicode
 //       and the font used by the terminal has a glyph for it.
 process.on('uncaughtException', (err /* , origin */) => {
-  const errorText = `${unicodeEscapes.errorSymbol} Uncaught ${
+  const errorText = `Uncaught ${
     err instanceof TypeError ? 'TypeError' : 'Error'
   }: ${err.message}`;
-  writeSync(process.stderr.fd, redden(errorText));
+
+  const columns = columnify(
+    [
+      {
+        symbol: redden(unicodeEscapes.errorSymbol),
+        description: redden(errorText),
+      },
+    ],
+    {
+      showHeaders: false,
+      minWidth: 3,
+      config: {
+        symbol: { align: 'center' },
+        description: { maxWidth: 76 },
+      },
+    }
+  );
+
+  writeSync(process.stderr.fd, columns);
 });
 
 // -----------------------------------------------------------------------------
