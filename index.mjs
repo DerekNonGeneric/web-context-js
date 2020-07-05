@@ -191,7 +191,19 @@ const require = createRequire(process.cwd() + '/<preload>');
 
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
-const dom = new JSDOM('<!DOCTYPE HTML><p>Hello, world!</p>');
+const dom = new JSDOM(\`<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>web-context-js</title>
+</head>
+
+<body>
+  <p>Hello.</p>
+</body>
+
+</html>\`);
 
 Object.defineProperties(
   globalThis,
