@@ -143,7 +143,7 @@ export class InvalidModuleSpecifierError extends TypeError {
       `Failed to resolve module specifier ${curlyQuote(specifier)} imported ` +
         `from ${underline(referrerUrl)}. Bare specifiers are reserved for ` +
         `potential future use and relative references ${italicize('must')} ` +
-        `begin with ${curlyQuote('/')}, ${curlyQuote('./')}, or ` +
+        `begin with either ${curlyQuote('/')}, ${curlyQuote('./')}, or ` +
         `${curlyQuote('../')}.`
     );
     this.code = 'ERR_INVALID_MODULE_SPECIFIER';
