@@ -11,14 +11,11 @@
 // Requirements
 // -----------------------------------------------------------------------------
 
-import { format } from 'util';
+import { EOL as newlineMarker } from 'os';
 import { writeSync } from 'fs';
 import clc from 'cli-color';
 import columnify from 'columnify';
 import supportsAnsi from 'supports-ansi';
-
-const baseURL = new URL('file://');
-baseURL.pathname = `${process.cwd()}/`;
 
 /** @enum {string} */
 const unicodeEscapes = {
@@ -27,6 +24,10 @@ const unicodeEscapes = {
   errorSymbol: '\u2715', // ×
   warningSymbol: '\u26A0', // ⚠
 };
+
+// Get the document's base URL since there might not be a referencing script.
+const baseURL = new URL('file://');
+baseURL.pathname = `${process.cwd()}/`;
 
 // -----------------------------------------------------------------------------
 // Events
@@ -56,12 +57,29 @@ process.on('uncaughtException', (err /* , origin */) => {
     }
   );
 
-  writeSync(process.stderr.fd, columns);
+  writeSync(process.stderr.fd, `${columns}${newlineMarker}`);
 });
 
 // -----------------------------------------------------------------------------
 // Helpers
 // -----------------------------------------------------------------------------
+
+/**
+ * Returns true if specifier does not start with the character
+ * U+002F SOLIDUS (`/`), the two-character sequence U+002E FULL STOP,
+ * U+002F SOLIDUS (`./`), or the three-character sequence U+002E FULL STOP,
+ * U+002E FULL STOP, U+002F SOLIDUS (`../`). Bare specifiers are reserved.
+ *
+ * @param {string} specifier
+ * @returns {boolean}
+ * @see https://html.spec.whatwg.org/multipage/webappapis.html#resolve-a-module-specifier
+ */
+export function isReservedSpecifier(specifier) {
+  if (!/^\.{0,2}\//.test(specifier) && !specifier.startsWith('file://')) {
+    return true;
+  }
+  return false;
+}
 
 /**
  * Returns the supplied string as a curly quoted string.
@@ -70,12 +88,11 @@ process.on('uncaughtException', (err /* , origin */) => {
  * @returns {string}
  */
 export function curlyQuote(arbitraryString) {
-  return format(
-    '%s%s%s',
-    unicodeEscapes.leftDoubleQuotes,
-    arbitraryString,
-    unicodeEscapes.rightDoubleQuotes
-  );
+  return `\
+${unicodeEscapes.leftDoubleQuotes}\
+${arbitraryString}\
+${unicodeEscapes.rightDoubleQuotes}\
+`;
 }
 
 /**
@@ -88,7 +105,7 @@ export function italicize(arbitraryString) {
 }
 
 /**
- * Returns the supplied string as a red colored if stream supports ANSI escapes.
+ * Returns the supplied string as red colored if stream supports ANSI escapes.
  * @param {string} arbitraryString
  * @returns {string}
  */
@@ -103,23 +120,6 @@ export function redden(arbitraryString) {
  */
 export function underline(arbitraryString) {
   return supportsAnsi ? clc.underline(arbitraryString) : arbitraryString;
-}
-
-/**
- * Returns true if specifier does not start with the character
- * U+002F SOLIDUS (`/`), the two-character sequence U+002E FULL STOP,
- * U+002F SOLIDUS (`./`), or the three-character sequence U+002E FULL STOP,
- * U+002E FULL STOP, U+002F SOLIDUS (`../`). Bare specifiers are reserved.
- *
- * @param {string} specifier
- * @returns {boolean}
- * @see https://html.spec.whatwg.org/multipage/webappapis.html#resolve-a-module-specifier
- */
-export function isReservedSpecifier(specifier) {
-  if (!specifier.startsWith('file://') && !/^\.{0,2}\//.test(specifier)) {
-    return true;
-  }
-  return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -168,9 +168,11 @@ export class InvalidModuleSpecifierError extends TypeError {
  */
 export async function resolve(specifier, context, defaultResolve) {
   const { parentURL = baseURL.href } = context;
+
   if (isReservedSpecifier(specifier)) {
     throw new InvalidModuleSpecifierError(specifier, parentURL);
   }
+
   return defaultResolve(specifier, { parentURL }, defaultResolve);
 }
 
