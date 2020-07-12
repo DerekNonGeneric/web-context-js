@@ -18,7 +18,7 @@ import columnify from 'columnify';
 import supportsAnsi from 'supports-ansi';
 
 /** @enum {string} */
-const unicodeEscapes = {
+const UnicodeEscapes = {
   leftDoubleQuotes: '\u201c', // “
   rightDoubleQuotes: '\u201d', // ”
   errorSymbol: '\u2715', // ×
@@ -33,7 +33,7 @@ baseURL.pathname = `${process.cwd()}/`;
 // Events
 // -----------------------------------------------------------------------------
 
-// TODO: Only use `unicodeEscapes.errorSymbol` if the terminal supports Unicode
+// TODO: Only use `UnicodeEscapes.errorSymbol` if the terminal supports Unicode
 //       and the font used by the terminal has a glyph for it.
 process.on('uncaughtException', (err /* , origin */) => {
   const errorText = `Uncaught ${
@@ -43,7 +43,7 @@ process.on('uncaughtException', (err /* , origin */) => {
   const columns = columnify(
     [
       {
-        symbol: redden(unicodeEscapes.errorSymbol),
+        symbol: redden(UnicodeEscapes.errorSymbol),
         description: redden(errorText),
       },
     ],
@@ -89,9 +89,9 @@ export function isReservedSpecifier(specifier) {
  */
 export function curlyQuote(arbitraryString) {
   return `\
-${unicodeEscapes.leftDoubleQuotes}\
+${UnicodeEscapes.leftDoubleQuotes}\
 ${arbitraryString}\
-${unicodeEscapes.rightDoubleQuotes}\
+${UnicodeEscapes.rightDoubleQuotes}\
 `;
 }
 
