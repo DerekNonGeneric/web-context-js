@@ -17,6 +17,11 @@ import clc from 'cli-color';
 import columnify from 'columnify';
 import supportsAnsi from 'supports-ansi';
 
+// JSDoc comments on the enum values are optional, but if left unspecified, they
+// will be interpreted as being of type `number` (i.e., `1`, `1.0`, `-5`, `1e5`,
+// `Math.PI`), which is why we've specified.
+// @see https://github.com/google/closure-compiler/wiki/Types-in-the-Closure-Type-System#types-in-javascript
+
 /** @enum {string} */
 const UnicodeEscapes = {
   leftDoubleQuotes: '\u201c', // “
