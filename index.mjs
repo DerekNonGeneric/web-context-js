@@ -93,6 +93,7 @@ export function isReservedSpecifier(specifier) {
  * @returns {string}
  */
 export function curlyQuote(arbitraryString) {
+  // TODO: Get rid of these backslashes.
   return `\
 ${UnicodeEscapes.leftDoubleQuotes}\
 ${arbitraryString}\
@@ -185,13 +186,15 @@ export async function resolve(specifier, context, defaultResolve) {
  * Node.js custom loader getGlobalPreloadCode hook — allows returning JS source
  * text that will be run as a sloppy-mode script on startup.
  *
- * Doing what we've done at the end _might_ be an antipattern. (?)
+ * TODO: Make sure that copying `dom.window` props onto `globalThis` isn't an
+ *       antipattern in this context (Node.js ESM).
+ * @see https://github.com/jsdom/jsdom/wiki/Don't-stuff-jsdom-globals-onto-the-Node-global
  *
  * @returns {string} Code to run before application startup.
- * @see https://github.com/jsdom/jsdom/wiki/Don't-stuff-jsdom-globals-onto-the-Node-global
  */
 export function getGlobalPreloadCode() {
   // All the ECMAScript code loaded within the scope of the global environment.
+  // TODO: Determine name of the context below (`getBuiltin` available global).
   return `\
 const { createRequire } = getBuiltin('module');
 const require = createRequire(process.cwd() + '/<preload>');
