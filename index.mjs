@@ -21,6 +21,7 @@ import supportsAnsi from 'supports-ansi';
 // will be interpreted as being of type `number` (i.e., `1`, `1.0`, `-5`, `1e5`,
 // `Math.PI`), which is why we've specified.
 // @see https://github.com/google/closure-compiler/wiki/Types-in-the-Closure-Type-System#types-in-javascript
+// @see https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler#enum-type
 
 /** @enum {string} */
 const UnicodeEscapes = {
