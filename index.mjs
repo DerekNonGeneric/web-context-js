@@ -27,7 +27,7 @@ import supportsAnsi from 'supports-ansi';
 const UnicodeEscapes = {
   leftDoubleQuotes: '\u201c', // “
   rightDoubleQuotes: '\u201d', // ”
-  errorSymbol: '\u2715', // ×
+  errorSymbol: '\u24E7', // ⓧ
   warningSymbol: '\u26A0', // ⚠
 };
 
