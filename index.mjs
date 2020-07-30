@@ -167,10 +167,10 @@ export class InvalidModuleSpecifierError extends TypeError {
  *
  * @param {string} specifier
  * @param {{
- *   parentURL: !(string | undefined),
  *   conditions: !Array<string>,
+ *   parentURL: !(string | undefined),
  * }} context
- * @param {!Function} defaultResolve
+ * @param {Function} defaultResolve
  * @returns {Promise<{ url: string }>} The response.
  */
 export async function resolve(specifier, context, defaultResolve) {
