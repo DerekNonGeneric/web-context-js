@@ -11,7 +11,7 @@
   "author": "Derek Lewis <DerekNonGeneric@inf.is>",
   "license": "0BSD",
   "engines": {
-    "node": "14.7.0"
+    "node": "14.9.0"
   },
   "dependencies": {
     "cli-color": "2.0.0",
