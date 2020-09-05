@@ -11,6 +11,7 @@
 // Requirements
 // -----------------------------------------------------------------------------
 
+import { format } from 'util';
 import { EOL as newlineMarker } from 'os';
 import { writeSync } from 'fs';
 import clc from 'cli-color';
@@ -94,12 +95,12 @@ export function isReservedSpecifier(specifier) {
  * @returns {string}
  */
 export function curlyQuote(arbitraryString) {
-  // TODO: Get rid of these backslashes.
-  return `\
-${UnicodeEscapes.leftDoubleQuotes}\
-${arbitraryString}\
-${UnicodeEscapes.rightDoubleQuotes}\
-`;
+  return format(
+    '%s%s%s',
+    UnicodeEscapes.leftDoubleQuotes,
+    arbitraryString,
+    UnicodeEscapes.rightDoubleQuotes
+  );
 }
 
 /**
