@@ -192,13 +192,16 @@ export async function resolve(specifier, context, defaultResolve) {
  *       antipattern in this context (Node.js ESM).
  * @see https://github.com/jsdom/jsdom/wiki/Don't-stuff-jsdom-globals-onto-the-Node-global
  *
+ * TODO: Create a test in which only browser globals are necessary and use the
+ * commented global censorship code below.
+ *
  * @returns {string} Code to run before application startup.
  */
 export function getGlobalPreloadCode() {
   // All the ECMAScript code loaded within the scope of the global environment.
   // TODO: Determine name of the context below (`getBuiltin` available global).
   return `\
-const { createRequire } = getBuiltin('module');
+const { builtinModules, createRequire } = getBuiltin('module');
 const require = createRequire(process.cwd() + '/<preload>');
 
 const jsdom = require('jsdom');
@@ -217,9 +220,17 @@ const dom = new JSDOM(\`<!DOCTYPE HTML>
 
 </html>\`);
 
+// Copying globals from a jsdom window onto the Node.js global allows us to run
+// code in some kind of hybrid franken-environment polluted with a ton of
+// extra globals that don't make sense there.
 Object.defineProperties(
   globalThis,
   Object.getOwnPropertyDescriptors(dom.window)
 );
+
+// Censor Node.js globals by providing shadow bindings with the value undefined.
+// builtinModules.forEach((value) => {
+//   globalThis[value] = undefined;
+// });
 `;
 }
