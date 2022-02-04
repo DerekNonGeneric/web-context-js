@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "cli-color": "2.0.1",
-    "columnify": "1.5.4",
+    "columnify": "1.6.0",
     "jsdom": "19.0.0",
     "supports-ansi": "1.0.6"
   }
