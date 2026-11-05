@@ -14,7 +14,7 @@
     "node": "16.19.1"
   },
   "dependencies": {
-    "cli-color": "2.0.3",
+    "cli-color": "2.0.4",
     "columnify": "1.6.0",
     "jsdom": "21.1.0",
     "supports-ansi": "1.0.6"
